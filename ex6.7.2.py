@@ -1,5 +1,5 @@
 import cv2
-from matplotlib import interactive, pyplot as plt
+from matplotlib import pyplot as plt
 
 B1 = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 B2 = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
