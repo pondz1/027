@@ -4,7 +4,8 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('Scan0024.TIF', 0)
+img = cv2.imread('./Scan0024.TIF', 0)
+print(img)
 blur = cv2.GaussianBlur(img, (3, 3), 0)
 
 hist = cv2.calcHist([blur], [0], None, [256], [0, 256])

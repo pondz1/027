@@ -3,7 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 
 # Open the image
-file = './misc/house.tiff'
+file = './project/1.jpg'
 img = cv2.imread(file, 0)
 h, w = img.shape
 thr = 127
