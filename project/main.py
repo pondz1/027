@@ -18,7 +18,7 @@ def remove_shadow(img_rgb):
     return cv2.merge(result_planes)
 
 
-def find_max_ellps(contour,max_list,hight):
+def find_max_ellps(contour, max_list, hight, width):
     max_ellps = 0
     for cnt in contour:
         area = cv2.contourArea(cnt)
@@ -27,8 +27,9 @@ def find_max_ellps(contour,max_list,hight):
         if cnt.shape[0] > 5:
             elps = cv2.fitEllipse(cnt)
             x, y, w, h = cv2.boundingRect(cnt)
-            if y > hight/2 and w > h and elps[1][0] > max_ellps and (elps[0][1] > 0 and elps[0][0] > 0):
-                max_ellps = elps[1][0]
+            if y > hight/2 and w > h and elps[1][1] > max_ellps and (elps[0][1] > 0 and elps[0][0] > 0):
+                if elps[2] > 0 and x > width/4 and x < width - width/4:
+                    max_ellps = elps[1][1]
     return max_ellps
 
 
@@ -47,7 +48,7 @@ def find_mouth(img):
     imgrgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result = remove_shadow(imgrgb)
     gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
-    HEIGT, _ = gray.shape
+    HEIGT, WIDTH = gray.shape
     _, thres = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     contours, _ = cv2.findContours(thres, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
@@ -56,7 +57,7 @@ def find_mouth(img):
 
     MAXS = find_max_list(contours)
 
-    max_ellps = find_max_ellps(contours, MAXS, HEIGT)
+    max_ellps = find_max_ellps(contours, MAXS, HEIGT, WIDTH)
     for cnt in contours:
         area = cv2.contourArea(cnt)
         if area < MAXS:
@@ -64,7 +65,7 @@ def find_mouth(img):
         if cnt.shape[0] > 5:
             elps = cv2.fitEllipse(cnt)
             x, y, w, h = cv2.boundingRect(cnt)
-            if y > HEIGT/2 and w > h and elps[1][0] == max_ellps:
+            if y > HEIGT/2 and w > h and elps[1][1] == max_ellps:
                 print(elps)
                 print(cv2.boundingRect(cnt))
                 cv2.ellipse(img, elps, (0, 0, 255), 2)
