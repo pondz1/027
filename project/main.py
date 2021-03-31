@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-img = cv2.imread('8.jpg')
+img = cv2.imread('1.jpg')
 
 imgrgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 rgb_planes = cv2.split(imgrgb)
@@ -34,7 +34,7 @@ for cnt in contours:
 
 max_list.sort()
 print(len(max_list))
-per = int(len(max_list)*2/100)
+per = int(len(max_list)*0.35/100)
 print(per)
 MAXS = max_list[len(max_list)-per]
 print("maxs = " + str(MAXS))
@@ -47,15 +47,15 @@ for i, cnt in enumerate(contours):
     orig_cnt = cnt.copy()
     cnt = cv2.approxPolyDP(cnt, 0.01 * cnt_len, True)
     x, y, w, h = cv2.boundingRect(orig_cnt)
-    if y > hight/2:
+    if y > hight/2 and w>h:
         border.append([x, y, w, h])
         cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
 cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
 cv2.namedWindow('Mouth Detector', cv2.WINDOW_NORMAL)
 cv2.imshow('Mouth Detector', img)
-cv2.namedWindow('thr', cv2.WINDOW_NORMAL)
-cv2.imshow('thr', thres)
+# cv2.namedWindow('thr', cv2.WINDOW_NORMAL)
+# cv2.imshow('thr', thres)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
