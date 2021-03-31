@@ -1,7 +1,10 @@
+from flask_cors import CORS
+from flask import Flask, request
 import cv2
+from flask.helpers import send_file
 import numpy as np
 from matplotlib import pyplot as plt
-import random as rng
+from flask import Flask
 
 
 def remove_shadow(img_rgb):
@@ -40,37 +43,51 @@ def find_max_list(contour):
     max_c = max_list[len(max_list)-per]
     return max_c
 
-img = cv2.imread('1.jpg')
-imgrgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-result = remove_shadow(imgrgb)
-gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
-HEIGT, _ = gray.shape
-_ , thres = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-contours, _ = cv2.findContours(thres, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+def find_mouth(img):
+    imgrgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    result = remove_shadow(imgrgb)
+    gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+    HEIGT, _ = gray.shape
+    _, thres = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    contours, _ = cv2.findContours(thres, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-# cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
-
-
-MAXS = find_max_list(contours)
-
-max_ellps = find_max_ellps(contours,MAXS,HEIGT)
-for cnt in contours:
-    area = cv2.contourArea(cnt)
-    if area < MAXS:
-        continue
-    if cnt.shape[0] > 5:
-        elps = cv2.fitEllipse(cnt)
-        x, y, w, h = cv2.boundingRect(cnt)
-        if y > HEIGT/2 and w > h and elps[1][0] == max_ellps:
-            print(elps)
-            print(cv2.boundingRect(cnt))
-            cv2.ellipse(img, elps, (0, 0, 255), 2)
-            cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    # cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
 
 
-cv2.namedWindow('Mouth Detector', cv2.WINDOW_NORMAL)
-cv2.imshow('Mouth Detector', img)
-cv2.namedWindow('thr', cv2.WINDOW_NORMAL)
-cv2.imshow('thr', thres)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    MAXS = find_max_list(contours)
+
+    max_ellps = find_max_ellps(contours, MAXS, HEIGT)
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if area < MAXS:
+            continue
+        if cnt.shape[0] > 5:
+            elps = cv2.fitEllipse(cnt)
+            x, y, w, h = cv2.boundingRect(cnt)
+            if y > HEIGT/2 and w > h and elps[1][0] == max_ellps:
+                print(elps)
+                print(cv2.boundingRect(cnt))
+                cv2.ellipse(img, elps, (0, 0, 255), 2)
+                cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    return img
+
+flask_app = Flask(__name__)
+CORS(flask_app)
+
+@flask_app.route('/getmouth', methods=['POST'])
+def hello_world():
+    file = request.files['file']
+    file.save('save.jpg')
+    print(file)
+    img = cv2.imread('save.jpg')
+    result = find_mouth(img)
+    cv2.imwrite('save/ok.jpg', result)
+    return send_file('save/ok.jpg')
+if __name__ == '__main__':
+    flask_app.run(debug=True, port=2020, host='0.0.0.0')
+# cv2.namedWindow('Mouth Detector', cv2.WINDOW_NORMAL)
+# cv2.imshow('Mouth Detector', img)
+# cv2.namedWindow('thr', cv2.WINDOW_NORMAL)
+# cv2.imshow('thr', thres)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
