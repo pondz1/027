@@ -66,10 +66,10 @@ def find_mouth(img):
             elps = cv2.fitEllipse(cnt)
             x, y, w, h = cv2.boundingRect(cnt)
             if y > HEIGT/2 and w > h and elps[1][1] == max_ellps:
-                print(elps)
-                print(cv2.boundingRect(cnt))
-                cv2.ellipse(img, elps, (0, 0, 255), 2)
-                cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                # print(elps)
+                # print(cv2.boundingRect(cnt))
+                # cv2.ellipse(img, elps, (0, 0, 255), 2)
+                cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 5)
     return img
 
 flask_app = Flask(__name__)
@@ -79,11 +79,11 @@ CORS(flask_app)
 def hello_world():
     file = request.files['file']
     file.save('save.jpg')
-    print(file)
     img = cv2.imread('save.jpg')
     result = find_mouth(img)
     cv2.imwrite('save/ok.jpg', result)
     return send_file('save/ok.jpg')
+
 if __name__ == '__main__':
     flask_app.run(debug=True, port=2020, host='0.0.0.0')
 # cv2.namedWindow('Mouth Detector', cv2.WINDOW_NORMAL)
