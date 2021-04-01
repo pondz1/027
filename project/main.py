@@ -3,7 +3,6 @@ from flask import Flask, request
 import cv2
 from flask.helpers import send_file
 import numpy as np
-from matplotlib import pyplot as plt
 from flask import Flask
 
 
