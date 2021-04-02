@@ -43,10 +43,8 @@ if __name__ == '__main__':
             continue
         x, y, w, h = cv2.boundingRect(cnt)
         if y > HEIGT/2 and w > h:
-            elps = cv2.fitEllipse(cnt)
-            cv2.ellipse(img, elps, (255, 100, 0), 2)
             cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 2)
-            print(cv2.boundingRect(cnt))
+            print([x,y,w,h])
 
     cv2.namedWindow('w > h', cv2.WINDOW_NORMAL)
     cv2.imshow('w > h', img)
