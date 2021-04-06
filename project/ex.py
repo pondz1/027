@@ -25,11 +25,11 @@ def find_max_list(contour):
 
 if __name__ == '__main__':
 
-    img = cv2.imread('1.jpg')
+    img = cv2.imread('9.jpg')
     result = remove_shadow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
     _, thres = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    contours, _ = cv2.findContours(thres, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(thres, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
 
     MAXS = find_max_list(contours)
@@ -44,7 +44,7 @@ if __name__ == '__main__':
             continue
         x, y, w, h = cv2.boundingRect(cnt)
         if y > HEIGT/2 and w > h and (w+h) >= max_rec \
-                and (x >= WIDTH/3) and (x <= WIDTH - WIDTH/3):
+                and (x >= WIDTH/4) and (x <= WIDTH - WIDTH/3):
             max_rec = (w+h)
             box_rec = [x,y,w,h]
                 
