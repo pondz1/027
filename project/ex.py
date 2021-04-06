@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-
 
 def remove_shadow(img_rgb):
     rgb_planes = cv2.split(img_rgb)
@@ -32,7 +30,7 @@ if __name__ == '__main__':
     gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
     _, thres = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     contours, _ = cv2.findContours(thres, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    # cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
+    cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
 
     MAXS = find_max_list(contours)
     HEIGT, WIDTH = gray.shape
@@ -58,5 +56,3 @@ if __name__ == '__main__':
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-# and (w+h) >= max_rec
